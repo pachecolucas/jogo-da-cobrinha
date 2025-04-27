@@ -7,8 +7,8 @@
     <style>
         td {
             background: #DDD;
-            width: 25px;
-            height: 25px;
+            width: 28px;
+            height: 28px;
             font-size: 20px;
             text-align: center;
         }
@@ -22,7 +22,11 @@
         const state = {
             gameOver: false,
             direcao: "c", // c=cima, b=baixo, e=esquerda, d=direita
-            nextDirecao: "c", // próxima direção desejada
+            macas: [
+                {y: 1, x: 1, life: 10 },
+                {y: 5, x: 8, life: 20 },
+                {y: 10, x: 9, life: 30 },
+            ],
             cobra: [
                 {y: 3, x: 1},
                 {y: 4, x: 1},
@@ -35,18 +39,24 @@
                 [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
                 [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
                 [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
-                [null, null, null, null, null, null, null, null, null, -1, null,null, null, null],
-                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
-                [null, null, null, -1, null, null, null, null, null, null, null,null, null, null],
                 [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
                 [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
                 [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
                 [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
                 [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
                 [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
-                [null, null, null, null, null, null, null, null, -1, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
                 [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
             ]
+        }
+
+        function run() {
+            atualizaMacas()
+            moverCobra()
+            render()
         }
 
         function moverCobra() {
@@ -56,8 +66,22 @@
             if (state.direcao == "e") state.cobra.unshift({ y: cabeca.y, x: cabeca.x - 1 })
             if (state.direcao == "d") state.cobra.unshift({ y: cabeca.y, x: cabeca.x + 1 })
             state.cobra.pop()
+        }
 
-            render()
+        function atualizaMacas() {
+            state.macas = state.macas.map(m=>{
+                return { ...m, life: m.life - 1 }
+            }).filter(m=>m.life > 0)
+
+            // probabilidade de adicionar nova maça
+            const adicionar = Math.floor(Math.random()*10) > 8
+            if (adicionar) {
+                state.macas.push({
+                    x: Math.floor(Math.random()*state.tabuleiro.length),
+                    y: Math.floor(Math.random()*state.tabuleiro.length),
+                    life: 50
+                })
+            }
         }
 
 
@@ -70,16 +94,21 @@
                 const tr = document.createElement("tr")
                 line.forEach((cell, x) => {
                     const td = document.createElement("td")
-                    // maça
-                    if (cell == -1) td.innerText = "🍎"
+                    // maças
+                    td.innerText = ""
+                    const indexMaca = state.macas.findIndex(m => m.y == y && m.x == x)
+                    if (indexMaca > -1) {
+                        td.innerText = "🍎"
+                    }
+
 
                     // corpo cobra
                     td.style.backgroundColor = "F3F3F3";
-                    const pedaco = state.cobra.find(p => p.y == y && p.x == x)
-                    const index = state.cobra.indexOf(pedaco)
-                    if (index > 0) {
-                        td.style.backgroundColor = `rgba(0, 200, 0, ${1/(index+1)})`
+                    const indexPedaco = state.cobra.findIndex(p => p.y == y && p.x == x)
+                    if (indexPedaco > -1) {
+                        td.style.backgroundColor = `rgba(0, 200, 0, ${1/(indexPedaco+1)})`
                     }
+
                     tr.appendChild(td)
                 })
                 table.appendChild(tr)
@@ -87,21 +116,22 @@
         }
 
         function init() {
-            setInterval(()=>{
-                if (state.gameOver) return
-                moverCobra()
-            }, 1000)
+            run()
+            // setInterval(()=>{
+            //     if (state.gameOver) return
+            //     run()
+            // }, 1000)
         }
 
         init()
 
         window.addEventListener("keydown", (ev) => {
-            console.log(ev.code)
             state.direcao 
             if (ev.code == "ArrowUp" && state.direcao != "b") state.direcao = "c";
             if (ev.code == "ArrowDown" && state.direcao != "c") state.direcao = "b";
             if (ev.code == "ArrowLeft" && state.direcao != "d") state.direcao = "e";
             if (ev.code == "ArrowRight" && state.direcao != "e") state.direcao = "d";
+            run()
         })
 
     </script>
