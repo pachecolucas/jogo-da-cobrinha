@@ -30,10 +30,6 @@
             cobra: [
                 {y: 3, x: 1},
                 {y: 4, x: 1},
-                {y: 4, x: 2},
-                {y: 4, x: 3},
-                {y: 5, x: 3},
-                {y: 6, x: 3},
             ],
             tabuleiro: [
                 [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
@@ -56,10 +52,22 @@
         function run() {
             atualizaMacas()
             moverCobra()
+            verificaSeCobraComeuMaca()
             render()
         }
 
+        function verificaSeCobraComeuMaca() {
+            const cabeca = state.cobra[0]
+            const macaNaCabeca = state.macas.find( m=>m.y == cabeca.y && m.x == cabeca.x)
+            if (macaNaCabeca) {
+                console.log("COMEU MAÇA");
+                state.cobra.push({x:-1, y:-1})
+                state.macas = state.macas.filter(m=>m != macaNaCabeca)
+            }
+        }
+
         function moverCobra() {
+            console.log(state.cobra)
             const cabeca = state.cobra[0]
             if (state.direcao == "c") state.cobra.unshift({ y: cabeca.y - 1, x: cabeca.x })
             if (state.direcao == "b") state.cobra.unshift({ y: cabeca.y + 1, x: cabeca.x })
@@ -116,11 +124,10 @@
         }
 
         function init() {
-            run()
-            // setInterval(()=>{
-            //     if (state.gameOver) return
-            //     run()
-            // }, 1000)
+            setInterval(()=>{
+                if (state.gameOver) return
+                run()
+            }, 300)
         }
 
         init()
