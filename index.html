@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        td {
+            background: #DDD;
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <table>
+    </table>
+    <script>
+        const state = {
+            gameOver: false,
+            direcao: "c", // c=cima, b=baixo, e=esquerda, d=direita
+            cobra: {
+                x: 5,
+                y: 3
+            },
+            tabuleiro: [
+                [0, -1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, -1, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+            ]
+        }
+
+        function render() {
+            const table = document.querySelector("table")
+            table.innerHTML = null
+            state.tabuleiro.forEach((line, y) => {
+                const tr = document.createElement("tr")
+                line.forEach((valor, x) => {
+                    const td = document.createElement("td")
+                    if (valor == -1) td.innerText = "🍎"
+                    if (state.cobra.y == y && state.cobra.x == x) td.innerText = "🐍"
+                    if (valor == -1 && state.cobra.y == y && state.cobra.x == x) {
+                        state.tabuleiro[y][x] = 0
+                        // if (calda.length == 0) state.corpo.push({x, y})
+                    }
+                    tr.appendChild(td)
+                })
+                table.appendChild(tr)
+            })
+        }
+
+        function init() {
+            setInterval(()=>{
+                if (state.gameOver) return
+                console.log("loop...")
+                if (state.direcao == "c") state.cobra.y = state.cobra.y - 1
+                if (state.direcao == "b") state.cobra.y = state.cobra.y + 1
+                if (state.direcao == "e") state.cobra.x = state.cobra.x - 1
+                if (state.direcao == "d") state.cobra.x = state.cobra.x + 1
+                if (state.cobra.x < 0 || state.cobra.y < 0 || state.cobra.x > state.tabuleiro[0].length - 1 || state.cobra.y > state.tabuleiro.length - 1) {
+                    state.gameOver = true
+                    alert("Game Over")
+                }
+                render()
+            }, 1000)
+        }
+
+        init()
+
+        window.addEventListener("keydown", (ev) => {
+            console.log(ev.code)
+            if (ev.code == "ArrowUp") state.direcao = "c"
+            if (ev.code == "ArrowDown") state.direcao = "b"
+            if (ev.code == "ArrowLeft") state.direcao = "e"
+            if (ev.code == "ArrowRight") state.direcao = "d"
+        })
+
+    </script>
+</body>
+</html>
