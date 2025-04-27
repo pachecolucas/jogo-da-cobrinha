@@ -7,8 +7,8 @@
     <style>
         td {
             background: #DDD;
-            width: 30px;
-            height: 30px;
+            width: 25px;
+            height: 25px;
             font-size: 20px;
             text-align: center;
         }
@@ -17,111 +17,53 @@
 <body>
     <table>
     </table>
+    <p></p>
     <script>
-        function moveSnake(grid, direction) {
-            const dirMap = {
-                up:    { row: -1, col:  0 },
-                down:  { row:  1, col:  0 },
-                left:  { row:  0, col: -1 },
-                right: { row:  0, col:  1 }
-            };
-
-            if (!dirMap[direction]) {
-                throw new Error('Invalid direction. Use "up", "down", "left", or "right".');
-            }
-
-            const { row: rowChange, col: colChange } = dirMap[direction];
-
-            // Step 1: Find all parts of the snake and sort them by their value (1, 2, 3, ...)
-            const snakeParts = [];
-
-            for (let row = 0; row < grid.length; row++) {
-                for (let col = 0; col < grid[row].length; col++) {
-                    const cell = grid[row][col];
-                    if (typeof cell === 'number' && cell > 0) {
-                        snakeParts[cell - 1] = { row, col };
-                    }
-                }
-            }
-
-            // Step 2: Calculate new positions
-            const newPositions = [];
-
-            // Head moves according to the direction
-            const head = snakeParts[0];
-            if (head) {
-                newPositions.push({ row: head.row + rowChange, col: head.col + colChange });
-            }
-
-            // Each part moves to the previous part's position
-            for (let i = 1; i < snakeParts.length; i++) {
-                newPositions.push({ row: snakeParts[i - 1].row, col: snakeParts[i - 1].col });
-            }
-
-            // Step 3: Clear old snake positions
-            for (const part of snakeParts) {
-                grid[part.row][part.col] = null;
-            }
-
-            // Step 4: Place snake parts in new positions
-            for (let i = 0; i < newPositions.length; i++) {
-                const { row, col } = newPositions[i];
-                if (row >= 0 && row < grid.length && col >= 0 && col < grid[0].length) { // make sure we stay inside the grid
-                    grid[row][col] = i + 1;
-                }
-            }
-
-            return grid;
-        }
-
         const state = {
             gameOver: false,
             direcao: "c", // c=cima, b=baixo, e=esquerda, d=direita
+            nextDirecao: "c", // próxima direção desejada
+            cobra: [
+                {y: 3, x: 1},
+                {y: 4, x: 1},
+                {y: 4, x: 2},
+                {y: 4, x: 3},
+                {y: 5, x: 3},
+                {y: 6, x: 3},
+            ],
             tabuleiro: [
-                [null, -1, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, 1, null, null, null, null, null, null],
-                [null, 2, 3, 4, null, null, null, null],
-                [null, null, null, 5, null, null, -1, null],
-                [null, null, null, 6, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, -1, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, -1, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, -1, null, null,null, null, null],
+                [null, null, null, null, null, null, null, null, null, null, null,null, null, null],
             ]
         }
 
-        function nextFrame() {
-            if (state.direcao == "c") moveSnake(state.tabuleiro, 'up')
-            if (state.direcao == "b") moveSnake(state.tabuleiro, 'down')
-            if (state.direcao == "e") moveSnake(state.tabuleiro, 'left')
-            if (state.direcao == "d") moveSnake(state.tabuleiro, 'right')
+        function moverCobra() {
+            const cabeca = state.cobra[0]
+            if (state.direcao == "c") state.cobra.unshift({ y: cabeca.y - 1, x: cabeca.x })
+            if (state.direcao == "b") state.cobra.unshift({ y: cabeca.y + 1, x: cabeca.x })
+            if (state.direcao == "e") state.cobra.unshift({ y: cabeca.y, x: cabeca.x - 1 })
+            if (state.direcao == "d") state.cobra.unshift({ y: cabeca.y, x: cabeca.x + 1 })
+            state.cobra.pop()
 
-            // if (state.cobra.x < 0 || state.cobra.y < 0 || state.cobra.x > state.tabuleiro[0].length - 1 || state.cobra.y > state.tabuleiro.length - 1) {
-            //     state.gameOver = true
-            //     alert("Game Over")
-            // }
-
+            render()
         }
-
-        function init() {
-            setInterval(()=>{
-                if (state.gameOver) return
-                nextFrame()
-                render()
-            }, 1000)
-        }
-
-        init()
-
-        window.addEventListener("keydown", (ev) => {
-            console.log(ev.code)
-            if (ev.code == "ArrowUp") state.direcao = "c"
-            if (ev.code == "ArrowDown") state.direcao = "b"
-            if (ev.code == "ArrowLeft") state.direcao = "e"
-            if (ev.code == "ArrowRight") state.direcao = "d"
-        })
 
 
         function render() {
+            const p = document.querySelector("p")
+            p.innerText = state.direcao
             const table = document.querySelector("table")
             table.innerHTML = null
             state.tabuleiro.forEach((line, y) => {
@@ -133,19 +75,34 @@
 
                     // corpo cobra
                     td.style.backgroundColor = "F3F3F3";
-                    if (cell > 0) {
-                        td.style.backgroundColor = `rgba(0, 255, 0, ${1/cell})`
+                    const pedaco = state.cobra.find(p => p.y == y && p.x == x)
+                    const index = state.cobra.indexOf(pedaco)
+                    if (index > 0) {
+                        td.style.backgroundColor = `rgba(0, 200, 0, ${1/(index+1)})`
                     }
-                    // if (valor == -1) td.innerText = "🍎"
-                    // if (state.cobra.y == y && state.cobra.x == x) td.innerText = "🐍"
-                    // if (valor == -1 && state.cobra.y == y && state.cobra.x == x) {
-                        // state.tabuleiro[y][x] = 0
-                    // }
                     tr.appendChild(td)
                 })
                 table.appendChild(tr)
             })
         }
+
+        function init() {
+            setInterval(()=>{
+                if (state.gameOver) return
+                moverCobra()
+            }, 1000)
+        }
+
+        init()
+
+        window.addEventListener("keydown", (ev) => {
+            console.log(ev.code)
+            state.direcao 
+            if (ev.code == "ArrowUp" && state.direcao != "b") state.direcao = "c";
+            if (ev.code == "ArrowDown" && state.direcao != "c") state.direcao = "b";
+            if (ev.code == "ArrowLeft" && state.direcao != "d") state.direcao = "e";
+            if (ev.code == "ArrowRight" && state.direcao != "e") state.direcao = "d";
+        })
 
     </script>
 </body>
