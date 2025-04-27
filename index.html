@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Jogo da Cobrinha</title>
     <style>
         * {
             margin: 0;
@@ -90,16 +90,6 @@
             render()
         }
 
-        function verificaSeCobraComeuMaca() {
-            const cabeca = state.cobra[0]
-            const macaNaCabeca = state.macas.find( m=>m.y == cabeca.y && m.x == cabeca.x)
-            if (macaNaCabeca) {
-                console.log("COMEU MAÇA");
-                state.cobra.push({x:-1, y:-1})
-                state.macas = state.macas.filter(m=>m != macaNaCabeca)
-            }
-        }
-
         function moverCobra() {
             console.log(state.cobra)
             const cabeca = state.cobra[0]
@@ -123,6 +113,16 @@
                     y: Math.floor(Math.random()*state.tabuleiro.length),
                     life: 50
                 })
+            }
+        }
+
+        function verificaSeCobraComeuMaca() {
+            const cabeca = state.cobra[0]
+            const macaNaCabeca = state.macas.find( m=>m.y == cabeca.y && m.x == cabeca.x)
+            if (macaNaCabeca) {
+                console.log("COMEU MAÇA");
+                state.cobra.push({x:-1, y:-1})
+                state.macas = state.macas.filter(m=>m != macaNaCabeca)
             }
         }
 
