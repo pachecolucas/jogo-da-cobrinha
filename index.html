@@ -5,21 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            min-height: 100vh;
+            background: #F5F5F5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        section {
+            background: white;
+            max-width: 500px;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            color: green;
+            margin-bottom: 10px;
+            font-size: 30px;
+        }
         td {
             background: #DDD;
             width: 28px;
             height: 28px;
             font-size: 20px;
             text-align: center;
+            font-size: 20px;
+        }
+        p {
+            padding-top: 10px;
         }
     </style>
 </head>
 <body>
-    <table>
-    </table>
-    <p></p>
+    <section>
+        <h1>Jogo da 🐍</h1>
+        <table>
+        </table>
+        <p>PONTOS: <b></b></p>
+    </section>
     <script>
         const state = {
+            paused: true,
             gameOver: false,
             direcao: "c", // c=cima, b=baixo, e=esquerda, d=direita
             macas: [
@@ -50,6 +83,7 @@
         }
 
         function run() {
+            if (state.paused) return
             atualizaMacas()
             moverCobra()
             verificaSeCobraComeuMaca()
@@ -94,8 +128,10 @@
 
 
         function render() {
-            const p = document.querySelector("p")
-            p.innerText = state.direcao
+            // pontos
+            const placar = document.querySelector("b")
+            placar.innerText = state.cobra.length
+
             const table = document.querySelector("table")
             table.innerHTML = null
             state.tabuleiro.forEach((line, y) => {
@@ -124,21 +160,21 @@
         }
 
         function init() {
+            render()
             setInterval(()=>{
                 if (state.gameOver) return
                 run()
-            }, 300)
+            }, 200)
         }
 
         init()
 
         window.addEventListener("keydown", (ev) => {
-            state.direcao 
+            state.paused = false
             if (ev.code == "ArrowUp" && state.direcao != "b") state.direcao = "c";
             if (ev.code == "ArrowDown" && state.direcao != "c") state.direcao = "b";
             if (ev.code == "ArrowLeft" && state.direcao != "d") state.direcao = "e";
             if (ev.code == "ArrowRight" && state.direcao != "e") state.direcao = "d";
-            run()
         })
 
     </script>
